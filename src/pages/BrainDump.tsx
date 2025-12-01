@@ -4,25 +4,13 @@ import { GlassCard } from "@/components/GlassCard";
 import { ProgressIndicator } from "@/components/ProgressIndicator";
 import { useNavigate } from "react-router-dom";
 import { Textarea } from "@/components/ui/textarea";
-import { Mic, MicOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const BrainDump = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [text, setText] = useState("");
-  const [isRecording, setIsRecording] = useState(false);
   const minChars = 50;
-
-  const handleRecording = () => {
-    if (!isRecording) {
-      toast({
-        title: "Voice recording",
-        description: "Voice recording would start here (feature coming soon)",
-      });
-    }
-    setIsRecording(!isRecording);
-  };
 
   const handleNext = () => {
     if (text.length < minChars) {
@@ -62,7 +50,7 @@ const BrainDump = () => {
             <div className="space-y-2">
               <h2 className="text-2xl font-bold">Tell me what's happening at work</h2>
               <p className="text-muted-foreground">
-                Speak or type for 1–3 minutes. Don't worry about structure.
+                Type for 1–3 minutes. Don't worry about structure—just get it all out.
               </p>
             </div>
 
@@ -71,39 +59,12 @@ const BrainDump = () => {
                 value={text}
                 onChange={(e) => setText(e.target.value)}
                 placeholder="Example: I've been in my role for 4 years, I'm exhausted, my manager doesn't understand my career goals, and I'm not sure if I should push for a promotion or look elsewhere..."
-                className="min-h-[200px] bg-background/50 border-border resize-none text-base"
+                className="min-h-[300px] bg-background/50 border-border resize-none text-base"
               />
               <div className="flex justify-between items-center text-xs text-muted-foreground">
                 <span>
                   {text.length} characters {text.length < minChars && `(${minChars - text.length} more needed)`}
                 </span>
-              </div>
-            </div>
-
-            <div className="border-t border-border pt-6">
-              <div className="flex flex-col items-center gap-4">
-                <button
-                  onClick={handleRecording}
-                  className={`w-16 h-16 rounded-full flex items-center justify-center transition-all ${
-                    isRecording
-                      ? "bg-destructive neon-glow animate-pulse"
-                      : "glass hover:glass-strong neon-glow"
-                  }`}
-                >
-                  {isRecording ? (
-                    <MicOff className="w-6 h-6" />
-                  ) : (
-                    <Mic className="w-6 h-6" />
-                  )}
-                </button>
-                <div className="text-center space-y-1">
-                  <p className="text-sm font-medium">
-                    {isRecording ? "Recording..." : "Hold to record"}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    Your voice is converted to text and analyzed only for this session
-                  </p>
-                </div>
               </div>
             </div>
           </div>
