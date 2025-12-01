@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { GoogleGenerativeAI } from "https://esm.sh/@google/generative-ai@0.1.3";
+import { GoogleGenerativeAI } from "https://esm.sh/@google/generative-ai@0.21.0";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -21,9 +21,7 @@ serve(async (req) => {
     }
 
     const genAI = new GoogleGenerativeAI(apiKey);
-    // Use gemini-2.0-flash-exp for speed and quality, or gemini-1.5-pro
-    // Note: Verify if "gemini-3-pro-preview" is available in the project. 
-    // Fallback to "gemini-1.5-pro" if 2.0/3.0 are not enabled.
+    // Use gemini-2.0-flash-exp for speed and quality
     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
 
     const prompt = `
