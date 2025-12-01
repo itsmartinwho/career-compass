@@ -2,32 +2,11 @@ import { Button } from "@/components/ui/button";
 import { GlassCard } from "@/components/GlassCard";
 import { ProgressIndicator } from "@/components/ProgressIndicator";
 import { useNavigate } from "react-router-dom";
-import { Badge } from "@/components/ui/badge";
+import { useSession } from "@/context/SessionContext";
 
 const Diagnosis = () => {
   const navigate = useNavigate();
-
-  // Mock diagnosis data
-  const diagnoses = [
-    {
-      label: "Burnout risk",
-      description: "Signs of emotional exhaustion and reduced engagement with work tasks",
-      intensity: 3,
-    },
-    {
-      label: "Unclear promotion path",
-      description: "Lack of clarity around advancement criteria and timeline",
-      intensity: 2,
-    },
-    {
-      label: "Skills under-utilization",
-      description: "Current role doesn't fully leverage your capabilities",
-      intensity: 2,
-    },
-  ];
-
-  const summary =
-    "You've been in your current role for several years and feel like you've stopped learning. You're experiencing signs of burnout and are unsure whether to move up internally or explore opportunities elsewhere that better align with your skills and interests.";
+  const { diagnosisSummary, diagnoses } = useSession();
 
   return (
     <div className="min-h-screen bg-background">
@@ -55,37 +34,45 @@ const Diagnosis = () => {
 
           {/* Diagnosis cards */}
           <div className="space-y-3">
-            {diagnoses.map((diagnosis, index) => (
-              <GlassCard key={index} className="hover:glass-strong transition-all cursor-pointer">
-                <div className="space-y-3">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-lg">{diagnosis.label}</h3>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        {diagnosis.description}
-                      </p>
-                    </div>
-                    <div className="flex gap-1">
-                      {Array.from({ length: 3 }).map((_, i) => (
-                        <div
-                          key={i}
-                          className={`w-2 h-2 rounded-full ${
-                            i < diagnosis.intensity ? "bg-primary" : "bg-muted"
-                          }`}
-                        />
-                      ))}
+            {diagnoses.length > 0 ? (
+              diagnoses.map((diagnosis, index) => (
+                <GlassCard key={index} className="hover:glass-strong transition-all cursor-pointer">
+                  <div className="space-y-3">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-lg">{diagnosis.label}</h3>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          {diagnosis.description}
+                        </p>
+                      </div>
+                      <div className="flex gap-1">
+                        {Array.from({ length: 3 }).map((_, i) => (
+                          <div
+                            key={i}
+                            className={`w-2 h-2 rounded-full ${
+                              i < diagnosis.intensity ? "bg-primary" : "bg-muted"
+                            }`}
+                          />
+                        ))}
+                      </div>
                     </div>
                   </div>
-                </div>
+                </GlassCard>
+              ))
+            ) : (
+              <GlassCard>
+                <p className="text-muted-foreground">No diagnoses found. Please restart the analysis.</p>
               </GlassCard>
-            ))}
+            )}
           </div>
 
           {/* Summary */}
           <GlassCard variant="strong" glow>
             <div className="space-y-3">
               <h3 className="font-semibold text-lg">In my own words (summary)</h3>
-              <p className="text-muted-foreground leading-relaxed">{summary}</p>
+              <p className="text-muted-foreground leading-relaxed">
+                {diagnosisSummary || "No summary available."}
+              </p>
             </div>
           </GlassCard>
         </div>

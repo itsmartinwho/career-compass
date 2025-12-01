@@ -1,17 +1,78 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSession } from "@/context/SessionContext";
+import { analyzeCareerPath } from "@/lib/gemini";
+import { extractTextFromPdf } from "@/lib/pdf-utils";
+import { useToast } from "@/hooks/use-toast";
 
 const Processing = () => {
   const navigate = useNavigate();
+  const { brainDumpText, cvFile, linkedinUrl, setAnalysisResults } = useSession();
+  const { toast } = useToast();
+  const [status, setStatus] = useState("Initializing...");
 
   useEffect(() => {
-    // Simulate processing time
-    const timer = setTimeout(() => {
-      navigate("/diagnosis");
-    }, 3000);
+    const processData = async () => {
+      try {
+        if (!brainDumpText) {
+          // If navigated directly, redirect back
+          navigate("/brain-dump");
+          return;
+        }
 
-    return () => clearTimeout(timer);
-  }, [navigate]);
+        let cvText = "";
+        if (cvFile) {
+          setStatus("Reading your CV...");
+          try {
+            if (cvFile.type === "application/pdf") {
+              cvText = await extractTextFromPdf(cvFile);
+            } else {
+               // Fallback for simple text/doc reading if possible or skip
+               // For now only supporting PDF text extraction robustly or plain text
+               cvText = await cvFile.text();
+            }
+          } catch (e) {
+            console.error("Failed to read CV", e);
+            toast({
+              title: "Could not read CV",
+              description: "Continuing without CV analysis.",
+              variant: "destructive"
+            });
+          }
+        }
+
+        setStatus("Consulting AI Strategist...");
+        
+        const result = await analyzeCareerPath({
+          brainDump: brainDumpText,
+          cvText,
+          linkedinUrl
+        });
+
+        // Validate basic structure
+        if (!result.careerPaths || !Array.isArray(result.careerPaths)) {
+          throw new Error("Invalid response format from AI");
+        }
+
+        setAnalysisResults(result.diagnosisSummary, result.diagnoses, result.careerPaths);
+        
+        // Success
+        navigate("/diagnosis");
+
+      } catch (error: any) {
+        console.error("Processing error:", error);
+        toast({
+          title: "Analysis Failed",
+          description: error.message || "Something went wrong. Please try again.",
+          variant: "destructive"
+        });
+        // Optional: Navigate back or show error state
+        navigate("/brain-dump");
+      }
+    };
+
+    processData();
+  }, [brainDumpText, cvFile, linkedinUrl, navigate, setAnalysisResults, toast]);
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-6">
@@ -25,7 +86,7 @@ const Processing = () => {
 
         <div className="space-y-4">
           <h2 className="text-2xl font-bold text-gradient">
-            Analyzing what you shared…
+            {status}
           </h2>
           
           <ul className="space-y-3 text-sm text-muted-foreground">

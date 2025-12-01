@@ -5,10 +5,12 @@ import { ProgressIndicator } from "@/components/ProgressIndicator";
 import { useNavigate } from "react-router-dom";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { useSession } from "@/context/SessionContext";
 
 const BrainDump = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { setBrainDumpText } = useSession(); // Use context
   const [text, setText] = useState("");
   const minChars = 50;
 
@@ -21,8 +23,8 @@ const BrainDump = () => {
       });
       return;
     }
-    // Store the brain dump text in session storage
-    sessionStorage.setItem("brainDump", text);
+    // Store the brain dump text in context
+    setBrainDumpText(text);
     navigate("/context");
   };
 
