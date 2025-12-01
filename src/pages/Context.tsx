@@ -6,10 +6,12 @@ import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Upload, Link2, FileText } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useSession } from "@/context/SessionContext";
 
 const Context = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { setCvFile: setContextCvFile, setLinkedinUrl: setContextLinkedinUrl } = useSession();
   const [cvFile, setCvFile] = useState<File | null>(null);
   const [linkedinUrl, setLinkedinUrl] = useState("");
 
@@ -33,9 +35,9 @@ const Context = () => {
   };
 
   const handleNext = () => {
-    // Store context in session storage
-    if (cvFile) sessionStorage.setItem("cvFileName", cvFile.name);
-    if (linkedinUrl) sessionStorage.setItem("linkedinUrl", linkedinUrl);
+    // Store context in global session state
+    if (cvFile) setContextCvFile(cvFile);
+    if (linkedinUrl) setContextLinkedinUrl(linkedinUrl);
     navigate("/processing");
   };
 

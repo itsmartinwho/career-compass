@@ -3,6 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { SessionProvider } from "@/context/SessionContext"; // Import SessionProvider
 import Welcome from "./pages/Welcome";
 import BrainDump from "./pages/BrainDump";
 import Context from "./pages/Context";
@@ -19,19 +20,21 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Welcome />} />
-          <Route path="/brain-dump" element={<BrainDump />} />
-          <Route path="/context" element={<Context />} />
-          <Route path="/processing" element={<Processing />} />
-          <Route path="/diagnosis" element={<Diagnosis />} />
-          <Route path="/paths" element={<Paths />} />
-          <Route path="/path/:pathId" element={<PathDetail />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+      <SessionProvider> 
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Welcome />} />
+            <Route path="/brain-dump" element={<BrainDump />} />
+            <Route path="/context" element={<Context />} />
+            <Route path="/processing" element={<Processing />} />
+            <Route path="/diagnosis" element={<Diagnosis />} />
+            <Route path="/paths" element={<Paths />} />
+            <Route path="/path/:pathId" element={<PathDetail />} />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </SessionProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );

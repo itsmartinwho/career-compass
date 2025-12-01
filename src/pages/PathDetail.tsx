@@ -10,139 +10,27 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { useSession } from "@/context/SessionContext";
 
 const PathDetail = () => {
   const navigate = useNavigate();
   const { pathId } = useParams();
   const { toast } = useToast();
+  const { careerPaths } = useSession();
   const [completedActions, setCompletedActions] = useState<string[]>([]);
 
-  // Mock path data - in real app, would fetch based on pathId
-  const pathData: Record<string, any> = {
-    "1": {
-      name: "Design a promotion plan",
-      description: "Work with your manager to create a clear path to senior level within your current company",
-      timeHorizon: "6-12 months",
-      risk: "Low",
-      energy: "Medium",
-      narrative: "This path leverages your existing relationships and company knowledge while addressing your need for advancement. You'll work systematically to understand and meet promotion criteria, building visibility with key stakeholders along the way.",
-      phases: [
-        {
-          id: "phase1",
-          title: "Phase 1: Immediate clarity (0-4 weeks)",
-          actions: [
-            {
-              id: "action1",
-              title: "Talk to your manager about promotion criteria",
-              tag: "Internal conversation",
-              context: "Understanding the exact requirements for promotion removes ambiguity and gives you a concrete target.",
-              howTo: [
-                "Schedule a dedicated 1:1 meeting",
-                "Ask: 'What specific skills and outcomes would I need to demonstrate for promotion to senior level?'",
-                "Request examples of recent successful promotions",
-                "Document everything in writing after the meeting"
-              ]
-            },
-            {
-              id: "action2",
-              title: "Map internal stakeholders and sponsors",
-              tag: "Networking",
-              context: "Promotions require advocacy from multiple people, not just your direct manager.",
-              howTo: [
-                "List 5-7 senior people whose opinion matters for your promotion",
-                "Identify 2-3 potential sponsors (senior leaders who could advocate for you)",
-                "Schedule informal coffee chats to understand their perspectives",
-                "Ask each: 'What would make someone stand out as promotion-ready in your view?'"
-              ],
-              targetPeople: [
-                {
-                  title: "Senior Manager or Director in your department",
-                  example: "Director of Product, VP of Engineering"
-                },
-                {
-                  title: "Peer senior-level professionals",
-                  example: "Senior Product Manager, Senior Data Analyst"
-                }
-              ],
-              searchPrompt: "(\"Senior Manager\" OR \"Director\") AND (\"your department\") AND \"your company\"",
-              messageTemplate: "Hi [Name], I've been reflecting on my career growth and would love to hear about your journey to [their current level]. Would you have 20 minutes for a coffee chat in the next few weeks?"
-            }
-          ]
-        },
-        {
-          id: "phase2",
-          title: "Phase 2: Build & demonstrate (1-3 months)",
-          actions: [
-            {
-              id: "action3",
-              title: "Create and execute a visible project",
-              tag: "Skill demonstration",
-              context: "Promotions require proof of impact at the next level.",
-              howTo: [
-                "Identify a high-visibility problem aligned with senior-level expectations",
-                "Propose a project that demonstrates leadership and strategic thinking",
-                "Update stakeholders regularly on progress",
-                "Document outcomes and impact metrics"
-              ]
-            },
-            {
-              id: "action4",
-              title: "Develop one critical skill gap",
-              tag: "Skill exploration",
-              context: "Address any skills that stand between you and promotion.",
-              howTo: [
-                "From your promotion criteria conversation, identify the #1 skill gap",
-                "Find an online course, mentor, or project to build this skill",
-                "Practice it in your current role",
-                "Share your learning progress with your manager"
-              ]
-            }
-          ]
-        },
-        {
-          id: "phase3",
-          title: "Phase 3: Make the case (3-6 months)",
-          actions: [
-            {
-              id: "action5",
-              title: "Document your promotion case",
-              tag: "Career planning",
-              context: "Create a compelling narrative of your readiness for the next level.",
-              howTo: [
-                "Write a 1-page summary of your achievements over the past 6-12 months",
-                "Map each achievement to promotion criteria",
-                "Include specific metrics and impact",
-                "Get feedback from your manager before formal review"
-              ]
-            },
-            {
-              id: "action6",
-              title: "Formal promotion discussion",
-              tag: "Internal conversation",
-              context: "Time to have the explicit conversation about promotion timing.",
-              howTo: [
-                "Request a meeting specifically to discuss promotion timeline",
-                "Present your documented case",
-                "Ask: 'Based on what I've demonstrated, what's the timeline for my promotion?'",
-                "If not now, get specific: 'What additional outcomes would make this a clear yes?'"
-              ]
-            }
-          ]
-        }
-      ],
-      immediateActions: [
-        "Schedule promotion criteria meeting with your manager this week",
-        "List 3 senior stakeholders you'll reach out to",
-        "Block 2 hours to research recent promotions in your company"
-      ]
-    }
-  };
-
-  const path = pathData[pathId || "1"];
+  const path = careerPaths.find((p) => p.id === pathId);
 
   if (!path) {
-    navigate("/paths");
-    return null;
+    // Navigate back if path not found (e.g. reload on detail page)
+    return (
+        <div className="min-h-screen bg-background flex items-center justify-center">
+            <div className="text-center space-y-4">
+                <p>Path not found or session expired.</p>
+                <Button onClick={() => navigate("/paths")}>Back to Paths</Button>
+            </div>
+        </div>
+    );
   }
 
   const toggleAction = (actionId: string) => {
@@ -283,7 +171,7 @@ const PathDetail = () => {
                               </div>
 
                               {/* Target people section */}
-                              {action.targetPeople && (
+                              {action.targetPeople && action.targetPeople.length > 0 && (
                                 <div className="space-y-2 pt-2 border-t border-border/30">
                                   <p className="text-sm font-semibold">Target people like:</p>
                                   {action.targetPeople.map((target, index) => (
