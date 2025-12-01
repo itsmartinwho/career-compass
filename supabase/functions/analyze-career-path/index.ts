@@ -1,5 +1,4 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { GoogleGenerativeAI } from "https://esm.sh/@google/generative-ai@0.21.0";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -20,9 +19,9 @@ serve(async (req) => {
       throw new Error('GEMINI_API_KEY is not set');
     }
 
-    const genAI = new GoogleGenerativeAI(apiKey);
-    // Use gemini-2.0-flash-exp for speed and quality
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
+    // Using REST API directly for Gemini 3.0 Pro Preview to ensure exact model usage
+    const model = "gemini-3-pro-preview";
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
     const prompt = `
       You are an expert career strategist for burnt-out professionals. 
@@ -80,9 +79,37 @@ serve(async (req) => {
       }
     `;
 
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        contents: [{
+          parts: [{ text: prompt }]
+        }],
+        generationConfig: {
+            responseMimeType: "application/json",
+             // Explicitly setting thinking level as per Gemini 3 docs
+            thinkingConfig: {
+                thinkingLevel: "low" 
+            }
+        }
+      })
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Gemini API Error:', errorText);
+      throw new Error(`Gemini API Error: ${response.status} ${response.statusText} - ${errorText}`);
+    }
+
+    const data = await response.json();
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+    if (!text) {
+      throw new Error('No text returned from Gemini API');
+    }
 
     // Clean up markdown code blocks if present (e.g. ```json ... ```)
     const cleanedText = text.replace(/```json\n?|```/g, '').trim();
