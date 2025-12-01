@@ -9,6 +9,7 @@ import Context from "./pages/Context";
 import Processing from "./pages/Processing";
 import Diagnosis from "./pages/Diagnosis";
 import Paths from "./pages/Paths";
+import PathDetail from "./pages/PathDetail";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,6 +27,7 @@ const App = () => (
           <Route path="/processing" element={<Processing />} />
           <Route path="/diagnosis" element={<Diagnosis />} />
           <Route path="/paths" element={<Paths />} />
+          <Route path="/path/:pathId" element={<PathDetail />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
