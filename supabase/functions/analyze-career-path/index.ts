@@ -19,8 +19,8 @@ serve(async (req) => {
       throw new Error('GEMINI_API_KEY is not set');
     }
 
-    // Using REST API directly for Gemini 3.0 Pro Preview to ensure exact model usage
-    const model = "gemini-3-pro-preview";
+    // Using REST API directly. Switching back to gemini-1.5-pro for free tier support.
+    const model = "gemini-1.5-pro";
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
     const prompt = `
@@ -89,11 +89,7 @@ serve(async (req) => {
           parts: [{ text: prompt }]
         }],
         generationConfig: {
-            responseMimeType: "application/json",
-             // Explicitly setting thinking level as per Gemini 3 docs
-            thinkingConfig: {
-                thinkingLevel: "low" 
-            }
+            responseMimeType: "application/json"
         }
       })
     });
