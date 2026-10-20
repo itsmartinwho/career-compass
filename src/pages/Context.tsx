@@ -79,7 +79,7 @@ const Context = () => {
                   <div className="flex-1 space-y-1">
                     <h3 className="font-semibold">Upload your CV</h3>
                     <p className="text-sm text-muted-foreground">
-                      PDF or DOCX, up to 5MB
+                      PDF or plain text, up to 5MB
                     </p>
                     <p className="text-xs text-muted-foreground">
                       I'll read your roles, skills, and education
@@ -90,7 +90,7 @@ const Context = () => {
                   <input
                     type="file"
                     id="cv-upload"
-                    accept=".pdf,.docx"
+                    accept=".pdf,.txt"
                     onChange={handleFileUpload}
                     className="hidden"
                   />

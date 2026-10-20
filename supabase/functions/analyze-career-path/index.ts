@@ -5,6 +5,14 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// gemini-3.8-flash is Google's current stable Flash model (https://ai.google.dev/gemini-api/docs/models).
+// Set the GEMINI_MODEL secret to use another one.
+const DEFAULT_MODEL = 'gemini-3.8-flash';
+
+const MAX_BRAIN_DUMP_CHARS = 20_000;
+const MAX_CV_CHARS = 40_000;
+const MAX_URL_CHARS = 300;
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -12,16 +20,28 @@ serve(async (req) => {
   }
 
   try {
-    const { brainDump, cvText, linkedinUrl } = await req.json();
+    const body = await req.json();
     const apiKey = Deno.env.get('GEMINI_API_KEY');
 
     if (!apiKey) {
       throw new Error('GEMINI_API_KEY is not set');
     }
 
-    // Using REST API directly. Switching back to gemini-1.5-pro for free tier support.
-    const model = "gemini-1.5-pro";
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+    if (typeof body.brainDump !== 'string' || body.brainDump.trim() === '') {
+      return new Response(JSON.stringify({ error: 'brainDump is required' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // The function is reachable with the public anon key, so cap what it will send on to Gemini.
+    const brainDump = body.brainDump.slice(0, MAX_BRAIN_DUMP_CHARS);
+    const cvText = typeof body.cvText === 'string' ? body.cvText.slice(0, MAX_CV_CHARS) : '';
+    const linkedinUrl = typeof body.linkedinUrl === 'string' ? body.linkedinUrl.slice(0, MAX_URL_CHARS) : '';
+
+    // REST API, called directly. The model is a function secret so it can change without a redeploy of the code.
+    const model = Deno.env.get('GEMINI_MODEL') || DEFAULT_MODEL;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
 
     const prompt = `
       You are an expert career strategist for burnt-out professionals. 
@@ -83,6 +103,7 @@ serve(async (req) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'x-goog-api-key': apiKey,
       },
       body: JSON.stringify({
         contents: [{
@@ -117,7 +138,8 @@ serve(async (req) => {
 
   } catch (error) {
     console.error('Error:', error);
-    return new Response(JSON.stringify({ error: error.message }), {
+    const message = error instanceof Error ? error.message : String(error);
+    return new Response(JSON.stringify({ error: message }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
