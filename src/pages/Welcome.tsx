@@ -105,7 +105,7 @@ const Welcome = () => {
 
         {/* Footer */}
         <footer className="p-6 text-center text-xs text-muted-foreground">
-          Your session is completely confidential
+          Nothing is stored. Your answers are sent to Gemini to write your plan.
         </footer>
       </div>
     </div>
