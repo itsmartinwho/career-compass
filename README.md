@@ -24,7 +24,7 @@ The prompt asks for three paths and the code shows whatever comes back. The Link
 
 The browser never talks to Gemini. `src/lib/gemini.ts` calls one Supabase Edge Function, `analyze-career-path`, with the brain dump, the CV text and the URL. The function builds one prompt and calls Gemini's `generateContent` with a key held as a server-side secret. It asks for JSON only, strips any code fence, parses the result and returns it. The page checks that `careerPaths` is an array and otherwise goes back to the brain dump with an error.
 
-The function uses `gemini-3.8-flash`. Google retires models often, so the `GEMINI_MODEL` secret overrides it without a code change; the [current list](https://ai.google.dev/gemini-api/docs/models) is on Google's site. It forwards at most 20,000 characters of brain dump and 40,000 of CV text.
+The function uses `gemini-4-argon`, Google's most capable model. It has no free tier, so the key needs billing (as of October 2026: $2 per million input tokens and $10 per million output, doubling on 1 December). Google retires models often, so the `GEMINI_MODEL` secret overrides it without a code change, for example with `gemini-3.8-flash`, which runs on the free tier; the [current list](https://ai.google.dev/gemini-api/docs/models) is on Google's site. It forwards at most 20,000 characters of brain dump and 40,000 of CV text.
 
 ## Privacy
 
@@ -33,7 +33,7 @@ A CV is personal data. This is what the code does with one, as far as it shows:
 - **Stored:** nothing. There are no Supabase tables and no migrations; Supabase only hosts the function. The answers and the result live in the page's memory and are gone when you reload or close the tab. The app writes nothing to localStorage, sessionStorage or cookies.
 - **Sent:** the brain dump, the extracted CV text and the LinkedIn URL go from the browser to your Supabase function, then to Google's Gemini API. The CV file itself stays in the browser, where pdf.js extracts its text. The pdf.js worker loads from cdnjs.cloudflare.com.
 - **Logged:** the function logs errors only (Gemini's error message), not the request. Supabase's own platform logs still record that it was called.
-- **Google:** it processes the text. As of October 2026 its pricing page says the free tier of the Gemini API uses content to improve its products and the paid tier does not. Use the paid tier if anyone will paste a real CV.
+- **Google:** it processes the text. As of October 2026 its pricing page says the free tier of the Gemini API uses content to improve its products and the paid tier does not. The default model is paid-only, so that holds unless you switch to a free-tier model; if you do, don't let anyone paste a real CV.
 - **How long:** the app keeps nothing, so nothing expires. How long Google and Supabase keep their own logs is set by their terms, not by this code.
 
 ## Costs and abuse
@@ -68,7 +68,7 @@ supabase functions deploy analyze-career-path
 ```
 
 - `GEMINI_API_KEY` is required. Get one in [Google AI Studio](https://aistudio.google.com/apikey).
-- `GEMINI_MODEL` is optional and defaults to `gemini-3.8-flash`: `supabase secrets set GEMINI_MODEL=...`
+- `GEMINI_MODEL` is optional and defaults to `gemini-4-argon`: `supabase secrets set GEMINI_MODEL=...`
 - Keep the platform's JWT check on (the default). The client sends the project's anon key, which passes it.
 
 ## Project structure
