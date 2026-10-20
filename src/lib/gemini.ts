@@ -1,4 +1,4 @@
-import { supabase } from "./supabase";
+import { supabase, isSupabaseConfigured } from "./supabase";
 
 export interface AnalysisInput {
   brainDump: string;
@@ -7,6 +7,10 @@ export interface AnalysisInput {
 }
 
 export const analyzeCareerPath = async (input: AnalysisInput) => {
+  if (!isSupabaseConfigured) {
+    throw new Error("Supabase is not set up. Copy .env.example to .env and fill it in.");
+  }
+
   try {
     const { data, error } = await supabase.functions.invoke('analyze-career-path', {
       body: input,
