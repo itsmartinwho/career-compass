@@ -243,17 +243,6 @@ const PathDetail = () => {
           >
             See other paths
           </Button>
-          <Button
-            onClick={() => {
-              toast({
-                title: "Plan saved!",
-                description: "You can access this anytime",
-              });
-            }}
-            className="flex-1 neon-glow"
-          >
-            Save this plan
-          </Button>
         </div>
       </div>
     </div>

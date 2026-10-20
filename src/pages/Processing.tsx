@@ -24,11 +24,10 @@ const Processing = () => {
         if (cvFile) {
           setStatus("Reading your CV...");
           try {
-            if (cvFile.type === "application/pdf") {
+            if (cvFile.type === "application/pdf" || cvFile.name.toLowerCase().endsWith(".pdf")) {
               cvText = await extractTextFromPdf(cvFile);
             } else {
-               // Fallback for simple text/doc reading if possible or skip
-               // For now only supporting PDF text extraction robustly or plain text
+               // Anything else is read as plain text (the upload accepts .pdf and .txt)
                cvText = await cvFile.text();
             }
           } catch (e) {
@@ -59,11 +58,11 @@ const Processing = () => {
         // Success
         navigate("/diagnosis");
 
-      } catch (error: any) {
+      } catch (error) {
         console.error("Processing error:", error);
         toast({
           title: "Analysis Failed",
-          description: error.message || "Something went wrong. Please try again.",
+          description: error instanceof Error && error.message ? error.message : "Something went wrong. Please try again.",
           variant: "destructive"
         });
         // Optional: Navigate back or show error state
