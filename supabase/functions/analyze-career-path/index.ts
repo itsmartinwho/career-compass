@@ -5,9 +5,9 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// gemini-3.8-flash is Google's current stable Flash model (https://ai.google.dev/gemini-api/docs/models).
-// Set the GEMINI_MODEL secret to use another one.
-const DEFAULT_MODEL = 'gemini-3.8-flash';
+// gemini-4-argon is Google's most capable stable model (https://ai.google.dev/gemini-api/docs/models).
+// It has no free tier. Set the GEMINI_MODEL secret to use another one, e.g. gemini-3.8-flash, which has.
+const DEFAULT_MODEL = 'gemini-4-argon';
 
 const MAX_BRAIN_DUMP_CHARS = 20_000;
 const MAX_CV_CHARS = 40_000;
