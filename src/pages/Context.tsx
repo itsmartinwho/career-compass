@@ -44,15 +44,15 @@ const Context = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="p-6 space-y-4">
+      <header className="max-w-2xl mx-auto p-6 space-y-4">
         <div className="flex justify-between items-center">
           <button
             onClick={() => navigate("/brain-dump")}
-            className="text-muted-foreground hover:text-foreground transition-colors"
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             ← Back
           </button>
-          <h1 className="text-xl font-bold text-gradient">UNSTUCK</h1>
+          <h1 className="text-xl font-editorial">UNSTUCK</h1>
           <div className="w-16" />
         </div>
         <ProgressIndicator currentStep={1} totalSteps={4} />
@@ -61,10 +61,10 @@ const Context = () => {
       {/* Main content */}
       <main className="p-6 pb-32">
         <div className="max-w-2xl mx-auto space-y-6 animate-fade-in">
-          <div className="space-y-2 text-center">
-            <h2 className="text-2xl font-bold">Add context (optional)</h2>
-            <p className="text-muted-foreground">
-              I can suggest more precise paths if I know your experience. You can skip this.
+          <div className="space-y-2">
+            <h2 className="text-3xl font-editorial font-normal">Add context (optional)</h2>
+            <p className="text-sm text-muted-foreground">
+              Adding your resume or LinkedIn helps tailor the paths to your background. You can also skip this step.
             </p>
           </div>
 

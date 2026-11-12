@@ -5,9 +5,11 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// gemini-4-argon is Google's most capable stable model (https://ai.google.dev/gemini-api/docs/models).
-// It has no free tier. Set the GEMINI_MODEL secret to use another one, e.g. gemini-3.8-flash, which has.
-const DEFAULT_MODEL = 'gemini-4-argon';
+// gemini-3.8-flash is the default low-latency structured-output model (with a free tier).
+// Set GEMINI_MODEL to gemini-4-carbon or gemini-4-argon for deeper reasoning passes.
+const DEFAULT_MODEL = 'gemini-3.8-flash';
+const TYPESAFE_API_URL = 'https://api.typesafe.ai/v1/systemone';
+const TYPESAFE_MODEL = 'jev-latest';
 
 const MAX_BRAIN_DUMP_CHARS = 20_000;
 const MAX_CV_CHARS = 40_000;

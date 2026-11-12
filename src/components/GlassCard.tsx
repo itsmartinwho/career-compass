@@ -14,11 +14,11 @@ export const GlassCard = ({ children, className, variant = "default", glow = fal
     <div
       onClick={onClick}
       className={cn(
-        "rounded-2xl p-6",
+        "rounded-xl p-6",
         variant === "default" ? "glass" : "glass-strong",
-        glow && "neon-glow",
-        "transition-all duration-300",
-        onClick && "cursor-pointer",
+        glow && "ring-1 ring-primary/20",
+        "transition-colors duration-200",
+        onClick && "cursor-pointer hover:border-primary/40",
         className
       )}
     >

@@ -84,7 +84,7 @@ const Processing = () => {
         </div>
 
         <div className="space-y-4">
-          <h2 className="text-2xl font-bold text-gradient">
+          <h2 className="text-3xl font-editorial font-normal">
             {status}
           </h2>
           
